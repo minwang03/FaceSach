@@ -1,21 +1,36 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Màu cơ bản -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="light_blue_400">#FF29B6F6</color>
-    <color name="light_blue_600">#FF039BE5</color>
-    <color name="gray_400">#FFBDBDBD</color>
-    <color name="gray_600">#FF757575</color>
-    <color name="purple_500">#6200EE</color>
-    <color name="textPrimary">#212121</color> <!-- gần đen -->
-    <color name="textHint">#9E9E9E</color> <!-- xám nhạt -->
-    <color name="borderColor">#BDBDBD</color>
-    <color name="primary">#FFC107</color> <!-- Vàng rực rõ -->
-    <color name="onPrimary">#000000</color> <!-- Text đen trên vàng -->
-    <color name="background">#FFFDE7</color> <!-- Vàng nhạt dịu mắt -->
+
+    <!-- Màu chữ chính -->
+    <color name="textPrimary">#1A237E</color> <!-- xanh navy đậm, rất dễ đọc -->
+    <color name="textHint">#9E9E9E</color> <!-- xám nhạt gợi ý -->
+
+    <!-- Màu nền app dịu mắt -->
+    <color name="background">#FFFDE7</color> <!-- vàng pastel rất nhẹ -->
+
+    <!-- Vàng dịu – dùng làm màu chủ đạo -->
+    <color name="primary">#FFE082</color> <!-- vàng nhẹ dễ chịu -->
+    <color name="onPrimary">#1A237E</color> <!-- chữ xanh đậm trên nền vàng -->
+
+    <!-- Màu vàng tiêu chuẩn -->
+    <color name="yellow_standard">#FBC02D</color> <!-- vàng đậm nhưng vẫn dịu -->
     <color name="yellow_light_1">#FFF9C4</color>
     <color name="yellow_light_2">#FFF59D</color>
     <color name="yellow_light_3">#FFF176</color>
-    <color name="yellow_standard">#FFEB3B</color>
 
+    <!-- Màu xám dịu -->
+    <color name="gray_400">#CCCCCC</color>
+    <color name="gray_600">#888888</color>
+
+    <!-- Màu viền nhẹ -->
+    <color name="borderColor">#D6D6D6</color>
+
+    <!-- Màu xanh dịu -->
+    <color name="light_blue_400">#81D4FA</color>
+    <color name="light_blue_600">#4FC3F7</color>
+
+    <!-- Có thể giữ lại để dùng tùy ý -->
+    <color name="purple_500">#6200EE</color>
 </resources>
