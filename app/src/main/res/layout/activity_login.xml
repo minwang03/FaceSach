@@ -32,7 +32,9 @@
             android:textStyle="bold"
             android:textColor="@color/primary"
             android:layout_marginBottom="32dp"
-            android:autofillHints="emailAddress"/>
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"/>
+
 
         <!-- Email -->
         <EditText
@@ -45,7 +47,8 @@
             android:textColorHint="@color/textHint"
             android:background="@drawable/edit_text_background"
             android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:autofillHints="emailAddress"/>
 
         <!-- Password -->
         <EditText

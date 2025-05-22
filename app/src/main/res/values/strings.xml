@@ -27,7 +27,7 @@
     <string name="edit_profile">Chỉnh sửa hồ sơ</string>
     <string name="change_password">Đổi mật khẩu</string>
     <string name="logout">Đăng xuất</string>
-    <string name="login_title">Chào mừng bạn đến với LKPCShop</string>
+    <string name="login_title">Welcome to LKShop</string>
     <string name="email_hint">Nhập email của bạn</string>
     <string name="password_hint">Nhập mật khẩu</string>
     <string name="login_button">Đăng nhập</string>
