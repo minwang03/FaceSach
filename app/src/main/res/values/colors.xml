@@ -13,4 +13,9 @@
     <color name="primary">#FFC107</color> <!-- Vàng rực rõ -->
     <color name="onPrimary">#000000</color> <!-- Text đen trên vàng -->
     <color name="background">#FFFDE7</color> <!-- Vàng nhạt dịu mắt -->
+    <color name="yellow_light_1">#FFF9C4</color>
+    <color name="yellow_light_2">#FFF59D</color>
+    <color name="yellow_light_3">#FFF176</color>
+    <color name="yellow_standard">#FFEB3B</color>
+
 </resources>

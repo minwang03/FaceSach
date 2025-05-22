@@ -14,7 +14,6 @@
             android:defaultValue="Tất cả" />
     </fragment>
 
-
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.facesach.ProfileFragment"
