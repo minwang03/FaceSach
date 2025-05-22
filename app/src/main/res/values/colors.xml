@@ -7,4 +7,10 @@
     <color name="gray_400">#FFBDBDBD</color>
     <color name="gray_600">#FF757575</color>
     <color name="purple_500">#6200EE</color>
+    <color name="textPrimary">#212121</color> <!-- gần đen -->
+    <color name="textHint">#9E9E9E</color> <!-- xám nhạt -->
+    <color name="borderColor">#BDBDBD</color>
+    <color name="primary">#FFC107</color> <!-- Vàng rực rõ -->
+    <color name="onPrimary">#000000</color> <!-- Text đen trên vàng -->
+    <color name="background">#FFFDE7</color> <!-- Vàng nhạt dịu mắt -->
 </resources>

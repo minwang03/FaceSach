@@ -27,8 +27,9 @@
     <string name="edit_profile">Chỉnh sửa hồ sơ</string>
     <string name="change_password">Đổi mật khẩu</string>
     <string name="logout">Đăng xuất</string>
-    <string name="login_title">Trang Đăng Nhập</string>
-    <string name="email_hint">Email</string>
-    <string name="password_hint">Mật khẩu</string>
+    <string name="login_title">Chào mừng bạn đến với LKPCShop</string>
+    <string name="email_hint">Nhập email của bạn</string>
+    <string name="password_hint">Nhập mật khẩu</string>
     <string name="login_button">Đăng nhập</string>
+    <string name="logo_desc">Logo của Linh Kiện Shop</string>
 </resources>
