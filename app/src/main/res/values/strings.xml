@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">FaceSach</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_home">Home</string>
+    <string name="home_song_title">Tiêu đề bài hát</string>
+    <string name="home_song_images">Hình ảnh bài hát</string>"
+    <string name="home_song_content">Nội dung bài hát hoặc thông tin chi tiết</string>
+    <string name="profile_content">This is Profile Fragment</string>
+    <string name="search_content">This is Search Fragment</string>
+    <string name="settings_content">This is Settings Fragment</string>
+    <string name="home_content">This is Home Fragment</string>
+    <string name="search_hint">Tìm kiếm linh kiện...</string>
+    <string name="category_title">Danh mục</string>
+    <string name="product_featured_title">Sản phẩm nổi bật</string>
+    <string name="profile_image_desc">Ảnh đại diện người dùng</string>
+    <string name="category_ic">IC</string>
+    <string name="category_sensor">Cảm biến</string>
+    <string name="category_microcontroller">Vi điều khiển</string>
+    <string name="category_power_supply">Nguồn điện</string>
+    <string name="product_ic_555_timer">IC 555 Timer</string>
+    <string name="product_price">Giá: 5.000 VNĐ</string>
+    <string name="product_image">Giá: 5.000 VNĐ</string>
+    <string name="profile_name">Nguyễn Văn A</string>
+    <string name="profile_email">nguyenvana@email.com</string>
+    <string name="edit_profile">Chỉnh sửa hồ sơ</string>
+    <string name="change_password">Đổi mật khẩu</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="login_title">Trang Đăng Nhập</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Mật khẩu</string>
+    <string name="login_button">Đăng nhập</string>
+</resources>
