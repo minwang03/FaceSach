@@ -4,18 +4,18 @@
     <color name="white">#FFFFFFFF</color>
 
     <!-- Màu chữ chính -->
-    <color name="textPrimary">#1A237E</color> <!-- xanh navy đậm, rất dễ đọc -->
-    <color name="textHint">#9E9E9E</color> <!-- xám nhạt gợi ý -->
+    <color name="textPrimary">#1A237E</color>
+    <color name="textHint">#9E9E9E</color>
 
     <!-- Màu nền app dịu mắt -->
-    <color name="background">#FFFDE7</color> <!-- vàng pastel rất nhẹ -->
+    <color name="background">#FFFDE7</color>
 
     <!-- Vàng dịu – dùng làm màu chủ đạo -->
-    <color name="primary">#FFE082</color> <!-- vàng nhẹ dễ chịu -->
-    <color name="onPrimary">#1A237E</color> <!-- chữ xanh đậm trên nền vàng -->
+    <color name="primary">#FFE082</color>
+    <color name="onPrimary">#1A237E</color>
 
     <!-- Màu vàng tiêu chuẩn -->
-    <color name="yellow_standard">#FBC02D</color> <!-- vàng đậm nhưng vẫn dịu -->
+    <color name="yellow_standard">#FBC02D</color>
     <color name="yellow_light_1">#FFF9C4</color>
     <color name="yellow_light_2">#FFF59D</color>
     <color name="yellow_light_3">#FFF176</color>
@@ -31,6 +31,6 @@
     <color name="light_blue_400">#81D4FA</color>
     <color name="light_blue_600">#4FC3F7</color>
 
-    <!-- Có thể giữ lại để dùng tùy ý -->
+    <!-- Dùng tùy ý -->
     <color name="purple_500">#6200EE</color>
 </resources>
