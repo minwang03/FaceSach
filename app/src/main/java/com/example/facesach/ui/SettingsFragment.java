@@ -1,4 +1,4 @@
-package com.example.facesach;
+package com.example.facesach.ui;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -8,9 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class SearchFragment extends Fragment {
+import com.example.facesach.R;
 
-    public SearchFragment() {
+public class SettingsFragment extends Fragment {
+
+    public SettingsFragment() {
         // Bắt buộc phải có constructor trống
     }
 
@@ -18,6 +20,6 @@ public class SearchFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         // Inflate layout cho fragment này
-        return inflater.inflate(R.layout.fragment_search, container, false);
+        return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 }
