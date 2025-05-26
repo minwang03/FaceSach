@@ -46,6 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/edit_profile"
+            android:backgroundTint="@color/gray_400"
             android:layout_marginTop="16dp" />
 
         <!-- Thêm các mục khác: Đổi mật khẩu, Đăng xuất,... -->
@@ -60,6 +61,7 @@
             android:id="@+id/btn_change_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/light_blue_600"
             android:text="@string/change_password" />
 
         <Button
