@@ -23,6 +23,11 @@ public class User {
         this.avatar = avatar;
     }
 
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     public int getUser_id() {
         return user_id;
     }

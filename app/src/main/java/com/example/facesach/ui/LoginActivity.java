@@ -1,6 +1,7 @@
 package com.example.facesach.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.example.facesach.api.ApiClient;
 import com.example.facesach.api.ApiService;
 import com.example.facesach.model.ApiResponse;
 import com.example.facesach.model.User;
+import com.google.gson.Gson;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,6 +43,15 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(v -> handleLogin());
     }
 
+    private void saveUser(User user) {
+        SharedPreferences prefs = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+        editor.putString("user_data", json);
+        editor.apply();
+    }
+
     private void handleLogin() {
         String email = inputEmail.getText().toString().trim();
         String password = inputPassword.getText().toString().trim();
@@ -50,34 +61,22 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        User loginRequest = new User();
-        loginRequest.setEmail(email);
-        loginRequest.setPassword(password);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<ApiResponse<User>> call = apiService.login(loginRequest);
-
-        call.enqueue(new Callback<ApiResponse<User>>() {
+        ApiClient.getClient().create(ApiService.class).login(new User(email, password)).enqueue(new Callback<ApiResponse<User>>() {
             @Override
-            public void onResponse(@NonNull Call<ApiResponse<User>> call, @NonNull Response<ApiResponse<User>> response) {
-                Log.d(TAG, "Email: " + email + " - Password: " + password);
-                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
-                    User loggedInUser = response.body().getData();
-                    Log.d(TAG, "Đăng nhập thành công: " + loggedInUser.getEmail());
-
+            public void onResponse(@NonNull Call<ApiResponse<User>> c, @NonNull Response<ApiResponse<User>> r) {
+                if (r.isSuccessful() && r.body() != null && r.body().getData() != null) {
+                    User loggedInUser = r.body().getData();
+                    saveUser(loggedInUser);
+                    Log.d(TAG, "User saved: " + loggedInUser.getName());
                     Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
                 } else {
                     Toast.makeText(LoginActivity.this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
-            public void onFailure(@NonNull Call<ApiResponse<User>> call, @NonNull Throwable t) {
-                Log.e(TAG, "Lỗi kết nối: " + t.getMessage());
+            public void onFailure(@NonNull Call<ApiResponse<User>> c, @NonNull Throwable t) {
                 Toast.makeText(LoginActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
