@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +73,7 @@ public class ProfileFragment extends Fragment {
             if (user != null) {
                 tvName.setText(user.getName() != null ? user.getName() : "Chưa cập nhật");
                 tvEmail.setText(user.getEmail() != null ? user.getEmail() : "Chưa cập nhật");
+
                 if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
                     Glide.with(this)
                             .load(user.getAvatar())
@@ -82,7 +84,29 @@ public class ProfileFragment extends Fragment {
                 } else {
                     profileImage.setImageResource(R.drawable.ic_avatar_placeholder);
                 }
+
+                editBtn.setVisibility(View.VISIBLE);
+                changePasswordBtn.setVisibility(View.VISIBLE);
+                logoutBtn.setText(getString(R.string.logout));
+                logoutBtn.setOnClickListener(v -> {
+                    clearUserData();
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                });
             }
+        } else {
+            tvName.setText(getString(R.string.guest_name));
+            tvEmail.setVisibility(View.VISIBLE);
+            profileImage.setImageResource(R.drawable.ic_avatar_placeholder);
+            editBtn.setVisibility(View.GONE);
+            changePasswordBtn.setVisibility(View.GONE);
+            logoutBtn.setText(getString(R.string.login));
+            logoutBtn.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green_login));
+            logoutBtn.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+            });
         }
     }
 

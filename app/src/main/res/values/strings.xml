@@ -34,5 +34,8 @@
     <string name="logo_desc">Logo của Linh Kiện Shop</string>
     <string name="register_text">Bạn chưa có tài khoản? <font color="#2196F3"><b>Đăng ký</b></font></string>
     <string name="remember_password">Lưu đăng nhập</string>
+    <string name="guest_name">Khách</string>
+    <string name="not_logged_in">Chưa đăng nhập</string>
+    <string name="login">Đăng nhập</string>
 
 </resources>

@@ -33,4 +33,5 @@
 
     <!-- Dùng tùy ý -->
     <color name="purple_500">#6200EE</color>
+    <color name="green_login">#4CAF50</color>
 </resources>
