@@ -31,6 +31,7 @@
     <string name="email_hint">Nhập email của bạn</string>
     <string name="password_hint">Nhập mật khẩu</string>
     <string name="login_button">Đăng nhập</string>
+    <string name="login_button_guest">Đăng nhập với khách</string>
     <string name="logo_desc">Logo của Linh Kiện Shop</string>
     <string name="register_text">Bạn chưa có tài khoản? <font color="#2196F3"><b>Đăng ký</b></font></string>
     <string name="remember_password">Lưu đăng nhập</string>

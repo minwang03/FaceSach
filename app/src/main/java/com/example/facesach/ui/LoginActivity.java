@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText inputEmail;
     private EditText inputPassword;
-    private Button btnLogin;
+    private Button btnLogin, btnLoginWithGuest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +39,10 @@ public class LoginActivity extends AppCompatActivity {
         inputEmail = findViewById(R.id.input_email);
         inputPassword = findViewById(R.id.input_password);
         btnLogin = findViewById(R.id.btn_login);
+        btnLoginWithGuest = findViewById(R.id.btn_login_guest);
 
         btnLogin.setOnClickListener(v -> handleLogin());
+        btnLoginWithGuest.setOnClickListener(v -> handleLoginWithGuest());
     }
 
     private void saveUser(User user) {
@@ -67,7 +69,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (r.isSuccessful() && r.body() != null && r.body().getData() != null) {
                     User loggedInUser = r.body().getData();
                     saveUser(loggedInUser);
-                    Log.d(TAG, "User saved: " + loggedInUser.getName());
                     Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
@@ -77,8 +78,14 @@ public class LoginActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(@NonNull Call<ApiResponse<User>> c, @NonNull Throwable t) {
-                Toast.makeText(LoginActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Lỗi kết nối server: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void handleLoginWithGuest(){
+        Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        finish();
     }
 }
