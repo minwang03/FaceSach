@@ -97,7 +97,7 @@ public class ProfileFragment extends Fragment {
             }
         } else {
             tvName.setText(getString(R.string.guest_name));
-            tvEmail.setVisibility(View.VISIBLE);
+            tvEmail.setVisibility(View.GONE);
             profileImage.setImageResource(R.drawable.ic_avatar_placeholder);
             editBtn.setVisibility(View.GONE);
             changePasswordBtn.setVisibility(View.GONE);
