@@ -27,8 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destId = destination.getId();
-            if (destId == R.id.homeFragment || destId == R.id.searchFragment ||
-                    destId == R.id.profileFragment || destId == R.id.settingsFragment) {
+            if (destId == R.id.homeFragment || destId == R.id.searchFragment || destId == R.id.profileFragment || destId == R.id.settingsFragment) {
                 bottomNavigationView.setVisibility(BottomNavigationView.VISIBLE);
                 bottomNavigationView.getMenu().findItem(destId).setChecked(true);
             }
