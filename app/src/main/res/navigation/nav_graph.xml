@@ -12,7 +12,15 @@
             android:name="category"
             app:argType="string"
             android:defaultValue="Tất cả" />
+        <action
+            android:id="@+id/action_homeFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.example.facesach.ui.ProductDetailFragment"
+        android:label="Product Detail" />
 
     <fragment
         android:id="@+id/profileFragment"

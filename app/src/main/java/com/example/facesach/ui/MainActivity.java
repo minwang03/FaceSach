@@ -24,5 +24,22 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
+
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            int destId = destination.getId();
+            if (destId == R.id.homeFragment || destId == R.id.searchFragment ||
+                    destId == R.id.profileFragment || destId == R.id.settingsFragment) {
+                bottomNavigationView.setVisibility(BottomNavigationView.VISIBLE);
+                bottomNavigationView.getMenu().findItem(destId).setChecked(true);
+            }
+            else if (destId == R.id.productDetailFragment) {
+                bottomNavigationView.setVisibility(BottomNavigationView.VISIBLE);
+                bottomNavigationView.getMenu().findItem(R.id.homeFragment).setChecked(true);
+            }
+            else {
+                bottomNavigationView.setVisibility(BottomNavigationView.GONE);
+            }
+        });
     }
+
 }

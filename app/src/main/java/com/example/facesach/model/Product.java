@@ -1,8 +1,9 @@
 package com.example.facesach.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class Product {
+public class Product implements Serializable {
     private int product_id;
     private String name;
     private String description;

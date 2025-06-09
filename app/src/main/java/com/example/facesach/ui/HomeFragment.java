@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 
 import com.bumptech.glide.Glide;
 import com.example.facesach.R;
@@ -107,7 +108,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // Hàm lọc sản phẩm theo categoryId
     private void filterProductsByCategory(int categoryId) {
         if (allProducts == null) return;
 
@@ -142,6 +142,13 @@ public class HomeFragment extends Fragment {
                     .placeholder(R.drawable.ic_avatar_placeholder)
                     .error(R.drawable.ic_avatar_placeholder)
                     .into(ivImage);
+
+            productView.setOnClickListener(v -> {
+                NavController navController = androidx.navigation.Navigation.findNavController(v);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("arg_product", product);
+                navController.navigate(R.id.action_homeFragment_to_productDetailFragment, bundle);
+            });
 
             productContainer.addView(productView);
         }
