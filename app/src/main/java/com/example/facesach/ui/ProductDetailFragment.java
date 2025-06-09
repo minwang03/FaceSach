@@ -1,5 +1,6 @@
 package com.example.facesach.ui;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +26,7 @@ public class ProductDetailFragment extends Fragment {
 
     private ImageView ivProductImage;
     private TextView tvProductName, tvProductPrice, tvProductDescription, tvQuantity;
-    private Button btnIncrease, btnDecrease, btnAddToCart;
+    private Button btnIncrease, btnDecrease, btnAddToCart, btnBack;
 
     private int quantity = 1;
 
@@ -48,10 +49,10 @@ public class ProductDetailFragment extends Fragment {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_product_detail, container, false);
 
         ivProductImage = view.findViewById(R.id.ivProductImage);
@@ -62,6 +63,8 @@ public class ProductDetailFragment extends Fragment {
         btnIncrease = view.findViewById(R.id.btnIncrease);
         btnDecrease = view.findViewById(R.id.btnDecrease);
         btnAddToCart = view.findViewById(R.id.btnAddToCart);
+
+        btnBack = view.findViewById(R.id.btnBack);
 
         if (product != null) {
             tvProductName.setText(product.getName());
@@ -88,6 +91,10 @@ public class ProductDetailFragment extends Fragment {
 
         btnAddToCart.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Đã thêm " + quantity + " sản phẩm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+        });
+
+        btnBack.setOnClickListener(v -> {
+            requireActivity().getOnBackPressedDispatcher().onBackPressed();
         });
 
         return view;
