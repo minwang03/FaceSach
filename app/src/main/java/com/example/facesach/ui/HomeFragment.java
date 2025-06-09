@@ -1,25 +1,128 @@
 package com.example.facesach.ui;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.bumptech.glide.Glide;
 import com.example.facesach.R;
+import com.example.facesach.api.ApiClient;
+import com.example.facesach.api.ApiService;
+import com.example.facesach.model.ApiResponse;
+import com.example.facesach.model.Category;
+import com.example.facesach.model.Product;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
-    public HomeFragment() {
-        // Bắt buộc phải có constructor trống
-    }
+    private LinearLayout categoryContainer;
+    private LinearLayout productContainer;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        // Inflate layout cho fragment này
-        return inflater.inflate(R.layout.fragment_home, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        categoryContainer = view.findViewById(R.id.categoryContainer);
+        productContainer = view.findViewById(R.id.productContainer);
+        loadCategories();
+        loadProducts();
+        return view;
+    }
+
+    private void loadCategories() {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        apiService.getAllCategories().enqueue(new Callback<ApiResponse<List<Category>>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<List<Category>>> call, @NonNull Response<ApiResponse<List<Category>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    showCategories(response.body().getData());
+                } else {
+                    Toast.makeText(getContext(), "Lỗi tải danh mục", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<List<Category>>> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Không thể kết nối server", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showCategories(List<Category> categories) {
+        for (Category category : categories) {
+            Button btn = new Button(getContext());
+            btn.setText(category.getName());
+            btn.setAllCaps(false);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            params.setMarginEnd(16);
+            btn.setLayoutParams(params);
+
+            btn.setOnClickListener(v ->
+                    Toast.makeText(getContext(), "Chọn: " + category.getName(), Toast.LENGTH_SHORT).show()
+            );
+
+            categoryContainer.addView(btn);
+        }
+    }
+
+    private void loadProducts() {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        apiService.getAllProducts().enqueue(new Callback<ApiResponse<List<Product>>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<List<Product>>> call, @NonNull Response<ApiResponse<List<Product>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    showProducts(response.body().getData());
+                } else {
+                    Toast.makeText(getContext(), "Lỗi tải sản phẩm", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<List<Product>>> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Không thể kết nối server", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showProducts(List<Product> products) {
+        productContainer.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+
+        for (Product product : products) {
+            View productView = inflater.inflate(R.layout.item_product, productContainer, false);
+
+            TextView tvName = productView.findViewById(R.id.tvProductName);
+            TextView tvPrice = productView.findViewById(R.id.tvProductPrice);
+            ImageView ivImage = productView.findViewById(R.id.ivProductImage);
+
+            tvName.setText(product.getName());
+            tvPrice.setText(String.format("%,d VND", product.getPrice()));
+
+            Glide.with(this)
+                    .load(product.getImage())
+                    .placeholder(R.drawable.ic_avatar_placeholder)
+                    .error(R.drawable.ic_avatar_placeholder)
+                    .into(ivImage);
+
+            productContainer.addView(productView);
+        }
     }
 }
