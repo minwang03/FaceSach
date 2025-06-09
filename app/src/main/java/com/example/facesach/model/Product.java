@@ -3,23 +3,23 @@ package com.example.facesach.model;
 import java.sql.Timestamp;
 
 public class Product {
-    private int productId;
+    private int product_id;
     private String name;
     private String description;
     private int price;
     private int stockQuantity;
-    private Integer categoryId;
+    private Integer category_id;
     private String image;
     private Timestamp createdAt;
 
     public Product() {}
 
     public int getProductId() {
-        return productId;
+        return product_id;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setProductId(int product_id) {
+        this.product_id = product_id;
     }
 
     public String getName() {
@@ -55,11 +55,11 @@ public class Product {
     }
 
     public Integer getCategoryId() {
-        return categoryId;
+        return category_id;
     }
 
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
+    public void setCategoryId(Integer category_id) {
+        this.category_id = category_id;
     }
 
     public String getImage() {

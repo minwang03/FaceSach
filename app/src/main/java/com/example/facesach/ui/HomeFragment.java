@@ -1,6 +1,7 @@
 package com.example.facesach.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ public class HomeFragment extends Fragment {
 
     private LinearLayout categoryContainer;
     private LinearLayout productContainer;
+    private List<Product> allProducts;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -68,6 +70,8 @@ public class HomeFragment extends Fragment {
             btn.setText(category.getName());
             btn.setAllCaps(false);
 
+            Log.d("HomeFragment", "Category ID: " + category.getCategoryId() + ", Name: " + category.getName());
+
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
@@ -75,9 +79,9 @@ public class HomeFragment extends Fragment {
             params.setMarginEnd(16);
             btn.setLayoutParams(params);
 
-            btn.setOnClickListener(v ->
-                    Toast.makeText(getContext(), "Chọn: " + category.getName(), Toast.LENGTH_SHORT).show()
-            );
+            btn.setOnClickListener(v -> {
+                filterProductsByCategory(category.getCategoryId());
+            });
 
             categoryContainer.addView(btn);
         }
@@ -89,7 +93,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<List<Product>>> call, @NonNull Response<ApiResponse<List<Product>>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    showProducts(response.body().getData());
+                    allProducts = response.body().getData();
+                    showProducts(allProducts);
                 } else {
                     Toast.makeText(getContext(), "Lỗi tải sản phẩm", Toast.LENGTH_SHORT).show();
                 }
@@ -100,6 +105,19 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getContext(), "Không thể kết nối server", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    // Hàm lọc sản phẩm theo categoryId
+    private void filterProductsByCategory(int categoryId) {
+        if (allProducts == null) return;
+
+        List<Product> filtered = new java.util.ArrayList<>();
+        for (Product p : allProducts) {
+            if (p.getCategoryId() == categoryId) {
+                filtered.add(p);
+            }
+        }
+        showProducts(filtered);
     }
 
     private void showProducts(List<Product> products) {
@@ -116,6 +134,9 @@ public class HomeFragment extends Fragment {
             tvName.setText(product.getName());
             tvPrice.setText(String.format("%,d VND", product.getPrice()));
 
+            Log.d("HomeFragment", "Product ID: " + product.getProductId() + ", Name: " + product.getName());
+
+
             Glide.with(this)
                     .load(product.getImage())
                     .placeholder(R.drawable.ic_avatar_placeholder)
@@ -126,3 +147,4 @@ public class HomeFragment extends Fragment {
         }
     }
 }
+
