@@ -12,11 +12,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.facesach.R;
+import com.example.facesach.model.CartItem;
+import com.example.facesach.model.CartStorage;
 import com.example.facesach.model.Product;
+
+import java.util.List;
 
 public class ProductDetailFragment extends Fragment {
 
@@ -90,8 +95,44 @@ public class ProductDetailFragment extends Fragment {
         });
 
         btnAddToCart.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Đã thêm " + quantity + " sản phẩm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            List<CartItem> currentCart = CartStorage.loadCart(requireContext());
+            boolean found = false;
+            for (CartItem item : currentCart) {
+                if (item.getProduct().getProductId() == product.getProductId()) {
+                    item.setQuantity(item.getQuantity() + quantity);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                currentCart.add(new CartItem(product, quantity));
+            }
+
+            CartStorage.saveCart(requireContext(), currentCart);
+
+            StringBuilder cartSummary = new StringBuilder("Giỏ hàng:\n");
+            for (CartItem item : currentCart) {
+                cartSummary.append("- ")
+                        .append(item.getProduct().getName())
+                        .append(" x")
+                        .append(item.getQuantity())
+                        .append(" Tổng tiền: ")
+                        .append(item.getTotalPrice())
+                        .append("\n");
+            }
+
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Giỏ hàng hiện tại")
+                    .setMessage(cartSummary.toString())
+                    .setPositiveButton("OK", null)
+                    .setNegativeButton("Xóa giỏ hàng", (dialog, which) -> {
+                        CartStorage.clearCart(requireContext());
+                        Toast.makeText(getContext(), "Đã xóa giỏ hàng", Toast.LENGTH_SHORT).show();
+                    })
+                    .show();
+
         });
+
 
         btnBack.setOnClickListener(v -> {
             requireActivity().getOnBackPressedDispatcher().onBackPressed();
