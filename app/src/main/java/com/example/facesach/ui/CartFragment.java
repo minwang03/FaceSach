@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,8 +20,9 @@ import java.util.List;
 
 public class CartFragment extends Fragment {
 
-    private RecyclerView recyclerView;
-    private CartAdapter cartAdapter;
+    RecyclerView recyclerView;
+    CartAdapter cartAdapter;
+    Button btnBackCart;
 
     public CartFragment() {
         // Required empty public constructor
@@ -31,6 +33,12 @@ public class CartFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
+
+        btnBackCart = view.findViewById(R.id.btnBackCart);
+
+        btnBackCart.setOnClickListener(v -> {
+            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+        });
 
         recyclerView = view.findViewById(R.id.recyclerViewCart);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));

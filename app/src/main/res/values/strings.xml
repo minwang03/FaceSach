@@ -38,5 +38,9 @@
     <string name="guest_name">Khách</string>
     <string name="not_logged_in">Chưa đăng nhập</string>
     <string name="login">Đăng nhập</string>
+    <string name="xem_gi_h_ng">Xem giỏ hàng</string>
+    <string name="gi_h_ng">Giỏ hàng</string>
+    <string name="quay_l_i">← Quay lại</string>
+    <string name="gi_h_ng_c_a_b_n">🛒 Giỏ hàng của bạn</string>
 
 </resources>

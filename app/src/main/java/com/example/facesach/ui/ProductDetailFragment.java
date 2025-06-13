@@ -29,9 +29,9 @@ public class ProductDetailFragment extends Fragment {
 
     private Product product;
 
-    private ImageView ivProductImage;
-    private TextView tvProductName, tvProductPrice, tvProductDescription, tvQuantity;
-    private Button btnIncrease, btnDecrease, btnAddToCart, btnBack;
+    ImageView ivProductImage;
+    TextView tvProductName, tvProductPrice, tvProductDescription, tvQuantity;
+    Button btnIncrease, btnDecrease, btnAddToCart, btnBack;
 
     private int quantity = 1;
 

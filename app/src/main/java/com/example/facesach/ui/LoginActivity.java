@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText inputEmail;
     private EditText inputPassword;
-    private Button btnLogin, btnLoginWithGuest;
+    Button btnLogin, btnLoginWithGuest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
