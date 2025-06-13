@@ -35,14 +35,22 @@ public class HomeFragment extends Fragment {
     private LinearLayout categoryContainer;
     private LinearLayout productContainer;
     private List<Product> allProducts;
+    Button btnViewCart;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         categoryContainer = view.findViewById(R.id.categoryContainer);
         productContainer = view.findViewById(R.id.productContainer);
+        btnViewCart = view.findViewById(R.id.btnViewCart);
         loadCategories();
         loadProducts();
+
+        btnViewCart.setOnClickListener(v -> {
+            NavController navController = androidx.navigation.Navigation.findNavController(v);
+            navController.navigate(R.id.action_homeFragment_to_cartFragment);
+        });
+
         return view;
     }
 

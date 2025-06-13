@@ -11,6 +11,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <Button
+            android:id="@+id/btnViewCart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Xem giỏ hàng"
+            android:layout_marginBottom="10dp"/>
+
         <!-- Danh mục sản phẩm -->
         <TextView
             android:layout_width="wrap_content"

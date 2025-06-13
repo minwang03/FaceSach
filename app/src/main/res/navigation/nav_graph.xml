@@ -15,12 +15,20 @@
         <action
             android:id="@+id/action_homeFragment_to_productDetailFragment"
             app:destination="@id/productDetailFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.example.facesach.ui.ProductDetailFragment"
         android:label="Product Detail" />
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.facesach.ui.CartFragment"
+        android:label="Cart" />
 
     <fragment
         android:id="@+id/profileFragment"
