@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -75,9 +76,11 @@ public class PaymentFragment extends Fragment {
         NavController navController = NavHostFragment.findNavController(this);
 
         if (result instanceof PaymentSheetResult.Completed) {
+            Toast.makeText(requireContext(), "Thanh toán thành công", Toast.LENGTH_SHORT).show();
             navController.navigate(R.id.homeFragment);
             CartStorage.clearCart(requireContext());
         } else if (result instanceof PaymentSheetResult.Failed) {
+            Toast.makeText(requireContext(), "Thanh toán thất bại", Toast.LENGTH_SHORT).show();
             navController.navigate(R.id.cartFragment);
         }
     }
