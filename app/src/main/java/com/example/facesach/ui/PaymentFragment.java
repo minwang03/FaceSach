@@ -14,6 +14,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.facesach.R;
+import com.example.facesach.model.CartStorage;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
@@ -75,6 +76,7 @@ public class PaymentFragment extends Fragment {
 
         if (result instanceof PaymentSheetResult.Completed) {
             navController.navigate(R.id.homeFragment);
+            CartStorage.clearCart(requireContext());
         } else if (result instanceof PaymentSheetResult.Failed) {
             navController.navigate(R.id.cartFragment);
         }
