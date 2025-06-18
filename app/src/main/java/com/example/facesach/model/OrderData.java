@@ -1,6 +1,6 @@
 package com.example.facesach.model;
 
-public class OrderData {
+public class OrderData{
     private int orderId;
     private String clientSecret;
     private int amount;
