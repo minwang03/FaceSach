@@ -2,6 +2,7 @@ package com.example.facesach.api;
 
 import com.example.facesach.model.ApiResponse;
 import com.example.facesach.model.Category;
+import com.example.facesach.model.OrderData;
 import com.example.facesach.model.OrderRequest;
 import com.example.facesach.model.Product;
 import com.example.facesach.model.User;
@@ -33,7 +34,7 @@ public interface ApiService {
     Call<ApiResponse<Product>> getProductById(@Path("id") int productId);
 
     @POST("orders")
-    Call<ApiResponse<Void>> createOrder(@Body OrderRequest orderRequest);
+    Call<ApiResponse<OrderData>> createOrder(@Body OrderRequest orderRequest);
 
 }
 

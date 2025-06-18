@@ -24,6 +24,7 @@ import com.example.facesach.api.ApiService;
 import com.example.facesach.model.ApiResponse;
 import com.example.facesach.model.CartItem;
 import com.example.facesach.model.CartStorage;
+import com.example.facesach.model.OrderData;
 import com.example.facesach.model.OrderRequest;
 import com.example.facesach.model.User;
 import com.google.gson.Gson;
@@ -109,16 +110,23 @@ public class CartFragment extends Fragment {
         Log.d("OrderRequest_JSON", gson.toJson(orderRequest));
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        apiService.createOrder(orderRequest).enqueue(new Callback<ApiResponse<Void>>() {
+        apiService.createOrder(orderRequest).enqueue(new Callback<ApiResponse<OrderData>>() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
-            public void onResponse(@NonNull Call<ApiResponse<Void>> call, @NonNull Response<ApiResponse<Void>> response) {
+            public void onResponse(@NonNull Call<ApiResponse<OrderData>> call, @NonNull Response<ApiResponse<OrderData>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    OrderData orderData = response.body().getData();
+                    if (orderData != null) {
+                        Log.d("OrderSuccess", "Order ID: " + orderData.getOrderId());
+                        Log.d("OrderSuccess", "Client Secret: " + orderData.getClientSecret());
+                        Log.d("OrderSuccess", "Amount: " + orderData.getAmount());
+                    }
                     Toast.makeText(getContext(), "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
-                    CartStorage.clearCart(requireContext());
-                    cartItems.clear();
-                    cartAdapter.notifyDataSetChanged();
-                    updateTotalPrice();
+
+//                    CartStorage.clearCart(requireContext());
+//                    cartItems.clear();
+//                    cartAdapter.notifyDataSetChanged();
+//                    updateTotalPrice();
                 } else {
                     Log.e("OrderError", "Lỗi response: " + response.code());
                     try {
@@ -133,10 +141,11 @@ public class CartFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<ApiResponse<Void>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ApiResponse<OrderData>> call, @NonNull Throwable t) {
                 Log.e("OrderError", "Lỗi kết nối server", t);
                 Toast.makeText(getContext(), "Không thể kết nối server", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 }
