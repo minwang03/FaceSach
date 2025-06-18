@@ -46,4 +46,6 @@ dependencies {
     implementation(libs.gsonconverter)
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
+    implementation("com.stripe:stripe-android:20.44.0")
+
 }
