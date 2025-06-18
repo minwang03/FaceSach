@@ -5,12 +5,14 @@ import com.example.facesach.model.Category;
 import com.example.facesach.model.OrderData;
 import com.example.facesach.model.OrderRequest;
 import com.example.facesach.model.Product;
+import com.example.facesach.model.StatusUpdateRequest;
 import com.example.facesach.model.User;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -36,5 +38,7 @@ public interface ApiService {
     @POST("orders")
     Call<ApiResponse<OrderData>> createOrder(@Body OrderRequest orderRequest);
 
+    @PUT("orders/{orderId}/status")
+    Call<ApiResponse<Void>> updateOrderStatus(@Path("orderId") int orderId, @Body StatusUpdateRequest statusUpdateRequest);
 }
 

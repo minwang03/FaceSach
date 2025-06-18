@@ -15,14 +15,23 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.facesach.R;
+import com.example.facesach.api.ApiClient;
+import com.example.facesach.api.ApiService;
+import com.example.facesach.model.ApiResponse;
 import com.example.facesach.model.CartStorage;
+import com.example.facesach.model.StatusUpdateRequest;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class PaymentFragment extends Fragment {
 
     private String clientSecret;
+    private int orderId;
     private PaymentSheet paymentSheet;
     Button btnCancel;
 
@@ -77,11 +86,40 @@ public class PaymentFragment extends Fragment {
 
         if (result instanceof PaymentSheetResult.Completed) {
             Toast.makeText(requireContext(), "Thanh toán thành công", Toast.LENGTH_SHORT).show();
-            navController.navigate(R.id.homeFragment);
+            Bundle bundle = getArguments();
+            if (bundle != null) {
+                orderId = bundle.getInt("orderId");
+            }
+            updateOrderStatus(orderId);
             CartStorage.clearCart(requireContext());
+            navController.navigate(R.id.homeFragment);
+
         } else if (result instanceof PaymentSheetResult.Failed) {
             Toast.makeText(requireContext(), "Thanh toán thất bại", Toast.LENGTH_SHORT).show();
             navController.navigate(R.id.cartFragment);
         }
     }
+
+    private void updateOrderStatus(int orderId) {
+        StatusUpdateRequest request = new StatusUpdateRequest("processing");
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        apiService.updateOrderStatus(orderId, request).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<Void>> call, @NonNull Response<ApiResponse<Void>> response) {
+                if (response.isSuccessful()) {
+                    Log.d("ORDER", "Đã cập nhật trạng thái thành: " + "processing");
+                } else {
+                    Log.e("ORDER", "Cập nhật thất bại: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<Void>> call, @NonNull Throwable t) {
+                Log.e("ORDER", "Lỗi khi cập nhật trạng thái: " + t.getMessage());
+            }
+        });
+    }
+
+
 }
