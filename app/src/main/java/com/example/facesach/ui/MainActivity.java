@@ -39,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
                 bottomNavigationView.setVisibility(BottomNavigationView.VISIBLE);
                 bottomNavigationView.getMenu().findItem(R.id.homeFragment).setChecked(true);
             }
+            else if (destId == R.id.paymentFragment) {
+                bottomNavigationView.setVisibility(BottomNavigationView.VISIBLE);
+                bottomNavigationView.getMenu().findItem(R.id.homeFragment).setChecked(true);
+            }
             else {
                 bottomNavigationView.setVisibility(BottomNavigationView.GONE);
             }

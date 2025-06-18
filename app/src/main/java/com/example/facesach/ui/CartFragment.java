@@ -15,6 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -101,11 +103,6 @@ public class CartFragment extends Fragment {
         }
 
         User user = gson.fromJson(json, User.class);
-        if (user == null || user.getUser_id() == 0) {
-            Toast.makeText(getContext(), "Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         OrderRequest orderRequest = prepareOrderRequest(user);
         Log.d("OrderRequest_JSON", gson.toJson(orderRequest));
 
@@ -116,33 +113,21 @@ public class CartFragment extends Fragment {
             public void onResponse(@NonNull Call<ApiResponse<OrderData>> call, @NonNull Response<ApiResponse<OrderData>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     OrderData orderData = response.body().getData();
-                    if (orderData != null) {
-                        Log.d("OrderSuccess", "Order ID: " + orderData.getOrderId());
-                        Log.d("OrderSuccess", "Client Secret: " + orderData.getClientSecret());
-                        Log.d("OrderSuccess", "Amount: " + orderData.getAmount());
-                    }
-                    Toast.makeText(getContext(), "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
 
-//                    CartStorage.clearCart(requireContext());
-//                    cartItems.clear();
-//                    cartAdapter.notifyDataSetChanged();
-//                    updateTotalPrice();
+                    NavController navController = Navigation.findNavController(requireView());
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("orderId", orderData.getOrderId());
+                    bundle.putString("clientSecret", orderData.getClientSecret());
+                    bundle.putLong("amount", orderData.getAmount());
+
+                    navController.navigate(R.id.action_cartFragment_to_paymentFragment, bundle);
                 } else {
-                    Log.e("OrderError", "Lỗi response: " + response.code());
-                    try {
-                        if (response.errorBody() != null) {
-                            Log.e("OrderError", "Chi tiết lỗi: " + response.errorBody().string());
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Toast.makeText(getContext(), "Lỗi khi đặt hàng", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Thêm sản phẩm để thanh toán", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ApiResponse<OrderData>> call, @NonNull Throwable t) {
-                Log.e("OrderError", "Lỗi kết nối server", t);
                 Toast.makeText(getContext(), "Không thể kết nối server", Toast.LENGTH_SHORT).show();
             }
         });

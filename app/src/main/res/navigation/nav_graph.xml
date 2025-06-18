@@ -28,7 +28,26 @@
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.example.facesach.ui.CartFragment"
-        android:label="Cart" />
+        android:label="Cart">
+        <action
+            android:id="@+id/action_cartFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.example.facesach.ui.PaymentFragment"
+        android:label="Payment" >
+        <argument
+            android:name="orderId"
+            app:argType="integer" />
+        <argument
+            android:name="clientSecret"
+            app:argType="string" />
+        <argument
+            android:name="amount"
+            app:argType="long" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
