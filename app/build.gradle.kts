@@ -47,5 +47,6 @@ dependencies {
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
     implementation("com.stripe:stripe-android:20.44.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
 }

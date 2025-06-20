@@ -17,7 +17,15 @@ import com.example.facesach.api.ApiClient;
 import com.example.facesach.api.ApiService;
 import com.example.facesach.model.ApiResponse;
 import com.example.facesach.model.User;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
+import com.google.android.gms.common.SignInButton;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,10 +34,13 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
+    private static final int RC_SIGN_IN = 1001;
+    private GoogleSignInClient mGoogleSignInClient;
+    SignInButton btnGoogleSignIn;
 
     private EditText inputEmail;
     private EditText inputPassword;
-    Button btnLogin, btnLoginWithGuest;
+    Button btnLogin, btnLoginWithGuest ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +51,61 @@ public class LoginActivity extends AppCompatActivity {
         inputPassword = findViewById(R.id.input_password);
         btnLogin = findViewById(R.id.btn_login);
         btnLoginWithGuest = findViewById(R.id.btn_login_guest);
+        btnGoogleSignIn = findViewById(R.id.btn_google_signin);
+
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         btnLogin.setOnClickListener(v -> handleLogin());
         btnLoginWithGuest.setOnClickListener(v -> handleLoginWithGuest());
+        btnGoogleSignIn.setOnClickListener(v -> {
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                if (account != null) {
+                    loginWithGoogle(account.getEmail(), account.getDisplayName());
+                }
+            } catch (ApiException e) {
+                Log.e(TAG, "Google sign in failed", e);
+                Toast.makeText(this, "Đăng nhập Google thất bại", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void loginWithGoogle(String email, String name) {
+        User user = new User();
+        user.setEmail(email);
+        user.setName(name);
+
+        ApiClient.getClient().create(ApiService.class).loginWithGoogle(user).enqueue(new Callback<ApiResponse<User>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<User>> call, @NonNull Response<ApiResponse<User>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    saveUser(response.body().getData());
+                    Toast.makeText(LoginActivity.this, "Đăng nhập Google thành công", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Đăng nhập Google thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<User>> call, @NonNull Throwable t) {
+                Toast.makeText(LoginActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void saveUser(User user) {

@@ -40,5 +40,9 @@ public interface ApiService {
 
     @PUT("orders/{orderId}/status")
     Call<ApiResponse<Void>> updateOrderStatus(@Path("orderId") int orderId, @Body StatusUpdateRequest statusUpdateRequest);
+
+    @POST("users/login-google")
+    Call<ApiResponse<User>> loginWithGoogle(@Body User user);
+
 }
 
