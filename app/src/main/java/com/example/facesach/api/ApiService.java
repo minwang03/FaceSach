@@ -7,9 +7,12 @@ import com.example.facesach.model.OrderRequest;
 import com.example.facesach.model.Product;
 import com.example.facesach.model.StatusUpdateRequest;
 import com.example.facesach.model.User;
+import com.example.facesach.model.Comment;
+
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -43,6 +46,15 @@ public interface ApiService {
 
     @POST("users/login-google")
     Call<ApiResponse<User>> loginWithGoogle(@Body User user);
+
+    @POST("comments")
+    Call<ApiResponse<Comment>> addComment(@Body Comment comment);
+
+    @GET("comments/product/{product_id}")
+    Call<ApiResponse<List<Comment>>> getCommentsByProduct(@Path("product_id") int productId);
+
+    @DELETE("comments/{comment_id}")
+    Call<ApiResponse<Void>> deleteComment(@Path("comment_id") int commentId);
 
 }
 

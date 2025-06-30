@@ -44,7 +44,7 @@ public class PaymentFragment extends Fragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             clientSecret = bundle.getString("clientSecret");
-        }
+        };
 
         // Khởi tạo Stripe SDK
         PaymentConfiguration.init(

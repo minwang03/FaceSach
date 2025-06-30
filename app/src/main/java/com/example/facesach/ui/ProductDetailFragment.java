@@ -1,11 +1,14 @@
 package com.example.facesach.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,14 +17,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.facesach.R;
+import com.example.facesach.api.ApiClient;
+import com.example.facesach.api.ApiService;
+import com.example.facesach.model.ApiResponse;
 import com.example.facesach.model.CartItem;
 import com.example.facesach.model.CartStorage;
+import com.example.facesach.model.Comment;
 import com.example.facesach.model.Product;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProductDetailFragment extends Fragment {
 
@@ -31,7 +48,12 @@ public class ProductDetailFragment extends Fragment {
 
     ImageView ivProductImage;
     TextView tvProductName, tvProductPrice, tvProductDescription, tvQuantity;
-    Button btnIncrease, btnDecrease, btnAddToCart, btnBack;
+    Button btnIncrease, btnDecrease, btnAddToCart, btnBack, btnSubmitComment;
+    EditText etComment;
+    RecyclerView rvComments;
+    CommentAdapter commentAdapter;
+    List<Comment> commentList = new ArrayList<>();
+
 
     private int quantity = 1;
 
@@ -68,6 +90,12 @@ public class ProductDetailFragment extends Fragment {
         btnIncrease = view.findViewById(R.id.btnIncrease);
         btnDecrease = view.findViewById(R.id.btnDecrease);
         btnAddToCart = view.findViewById(R.id.btnAddToCart);
+        etComment = view.findViewById(R.id.etComment);
+        btnSubmitComment = view.findViewById(R.id.btnSubmitComment);
+        rvComments = view.findViewById(R.id.rvComments);
+        rvComments.setLayoutManager(new LinearLayoutManager(requireContext()));
+        commentAdapter = new CommentAdapter(commentList);
+        rvComments.setAdapter(commentAdapter);
 
         btnBack = view.findViewById(R.id.btnBack);
 
@@ -138,6 +166,81 @@ public class ProductDetailFragment extends Fragment {
             requireActivity().getOnBackPressedDispatcher().onBackPressed();
         });
 
+        loadComments();
+
+        btnSubmitComment.setOnClickListener(v -> {
+            String commentText = etComment.getText().toString().trim();
+            if (commentText.isEmpty()) {
+                Toast.makeText(requireContext(), "Vui lòng nhập bình luận", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            submitComment(commentText);
+        });
+
         return view;
+    }
+
+    private void loadComments() {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        apiService.getCommentsByProduct(product.getProductId()).enqueue(new Callback<ApiResponse<List<Comment>>>() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<List<Comment>>> call, @NonNull Response<ApiResponse<List<Comment>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    commentList.clear();
+                    commentList.addAll(response.body().getData());
+                    commentAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<List<Comment>>> call, Throwable t) {
+                Toast.makeText(requireContext(), "Lỗi tải bình luận", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void submitComment(String content) {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+        String json = prefs.getString("user_data", null);
+        if (json == null) {
+            Toast.makeText(requireContext(), "Bạn chưa đăng nhập", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int userId;
+        try {
+            JSONObject userObj = new JSONObject(json);
+            userId = userObj.getInt("user_id");
+        } catch (JSONException e) {
+            Toast.makeText(requireContext(), "Dữ liệu người dùng không hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Comment comment = new Comment();
+        comment.setUser_id(userId);
+        comment.setProduct_id(product.getProductId());
+        comment.setRating(5);
+        comment.setComment(content);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        apiService.addComment(comment).enqueue(new Callback<ApiResponse<Comment>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<Comment>> call, @NonNull Response<ApiResponse<Comment>> response) {
+                if (response.isSuccessful()) {
+                    etComment.setText("");
+                    loadComments();
+                    Toast.makeText(requireContext(), "Đã gửi bình luận", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), "Gửi bình luận thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<Comment>> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), "Gửi bình luận thất bại", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
