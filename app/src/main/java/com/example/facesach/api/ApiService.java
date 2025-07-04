@@ -2,6 +2,7 @@ package com.example.facesach.api;
 
 import com.example.facesach.model.ApiResponse;
 import com.example.facesach.model.Category;
+import com.example.facesach.model.Message;
 import com.example.facesach.model.OrderData;
 import com.example.facesach.model.OrderRequest;
 import com.example.facesach.model.Product;
@@ -55,6 +56,12 @@ public interface ApiService {
 
     @DELETE("comments/{comment_id}")
     Call<ApiResponse<Void>> deleteComment(@Path("comment_id") int commentId);
+
+    @GET("messages/private/{user1}/{user2}")
+    Call<ApiResponse<List<Message>>> getPrivateMessages(@Path("user1") int user1, @Path("user2") int user2);
+
+    @POST("messages")
+    Call<ApiResponse<Message>> sendMessage(@Body Message message);
 
 }
 
