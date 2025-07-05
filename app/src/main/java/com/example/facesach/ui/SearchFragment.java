@@ -10,11 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.facesach.R;
 import com.example.facesach.api.ApiClient;
 import com.example.facesach.api.ApiService;
@@ -45,7 +47,7 @@ public class SearchFragment extends Fragment {
     List<Message> messageList = new ArrayList<>();
 
     private Socket socket;
-    int currentUserId;
+    private int currentUserId;
     int receiverId = 12;
     private String room;
 
@@ -57,9 +59,9 @@ public class SearchFragment extends Fragment {
         SharedPreferences prefs = requireActivity().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
         String json = prefs.getString("user_data", null);
         if (json != null) {
-            Gson gson = new Gson();
-            User user = gson.fromJson(json, User.class);
+            User user = new Gson().fromJson(json, User.class);
             currentUserId = user.getUser_id();
+            Log.d("DEBUG", "CurrentUserId = " + currentUserId);
         }
 
         recyclerView = view.findViewById(R.id.recyclerChat);
@@ -87,11 +89,14 @@ public class SearchFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<ApiResponse<Message>> call, @NonNull Response<ApiResponse<Message>> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            socket.emit("sendMessage", response.body().getData());
-                            messageList.add(response.body().getData());
-                            adapter.notifyItemInserted(messageList.size() - 1);
-                            recyclerView.scrollToPosition(messageList.size() - 1);
                             edtMessage.setText("");
+                            try {
+                                JSONObject jsonObject = new JSONObject(new Gson().toJson(response.body().getData()));
+                                socket.emit("sendMessage", jsonObject);
+                                Log.d("SocketEmit", "Emitted sendMessage: " + jsonObject.toString());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
 
@@ -112,12 +117,32 @@ public class SearchFragment extends Fragment {
 
     private void initSocket() {
         try {
-            socket = IO.socket("http://10.0.2.2:3001");
-            socket.connect();
-            socket.emit("joinRoom", room);
+            socket = IO.socket("http://10.0.2.2:3000");
+
+            socket.on(Socket.EVENT_CONNECT, args -> {
+                Log.d("SocketStatus", "Socket connected");
+                socket.emit("joinRoom", room);
+                Log.d("SocketStatus", "Emitted joinRoom: " + room);
+            });
+
+            socket.on(Socket.EVENT_CONNECT_ERROR, args -> Log.e("SocketStatus", "Connect error"));
+            socket.on(Socket.EVENT_DISCONNECT, args -> Log.d("SocketStatus", "Socket disconnected"));
+            socket.on("reconnect", args -> Log.d("SocketStatus", "Socket reconnected"));
             socket.on("newMessage", onNewMessage);
+
+            socket.connect();
+
         } catch (URISyntaxException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (socket != null) {
+            socket.disconnect();
+            socket.off("newMessage", onNewMessage);
         }
     }
 
@@ -125,9 +150,8 @@ public class SearchFragment extends Fragment {
         if (args.length > 0) {
             try {
                 JSONObject data = (JSONObject) args[0];
-                Gson gson = new Gson();
-                Message newMsg = gson.fromJson(data.toString(), Message.class);
-                Log.d("SocketMessageRaw", data.toString());
+                Log.d("SocketRawData", "Received newMessage: " + data.toString());
+                Message newMsg = new Gson().fromJson(data.toString(), Message.class);
 
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
@@ -160,12 +184,5 @@ public class SearchFragment extends Fragment {
                 t.printStackTrace();
             }
         });
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        socket.disconnect();
-        socket.off("newMessage", onNewMessage);
     }
 }
