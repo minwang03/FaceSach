@@ -63,5 +63,8 @@ public interface ApiService {
     @POST("messages")
     Call<ApiResponse<Message>> sendMessage(@Body Message message);
 
+    @DELETE("users/{id}")
+    Call<ApiResponse<Void>> deleteUser(@Path("id") int userId);
+
 }
 

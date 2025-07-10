@@ -12,13 +12,18 @@ import com.example.facesach.R;
 
 public class SettingsFragment extends Fragment {
 
-    public SettingsFragment() {
-        // Bắt buộc phải có constructor trống
-    }
+    public SettingsFragment() {}
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflate layout cho fragment này
-        return inflater.inflate(R.layout.fragment_settings, container, false);
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        View btnAllProducts = view.findViewById(R.id.btnAllProducts);
+        View btnAllUsers = view.findViewById(R.id.btnAllUsers);
+
+        btnAllProducts.setOnClickListener(v -> androidx.navigation.Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_allProductsFragment));
+        btnAllUsers.setOnClickListener(v -> androidx.navigation.Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_allUsersFragment));
+
+        return view;
     }
+
 }

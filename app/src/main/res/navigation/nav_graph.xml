@@ -62,6 +62,24 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.facesach.ui.SettingsFragment"
-        android:label="Settings" />
+        android:label="Settings">
 
+        <action
+            android:id="@+id/action_settingsFragment_to_allProductsFragment"
+            app:destination="@id/allProductsFragment" />
+
+        <action
+            android:id="@+id/action_settingsFragment_to_allUsersFragment"
+            app:destination="@id/allUsersFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/allProductsFragment"
+        android:name="com.example.facesach.ui.AllProductsFragment"
+        android:label="Tất cả sản phẩm" />
+
+    <fragment
+        android:id="@+id/allUsersFragment"
+        android:name="com.example.facesach.ui.AllUsersFragment"
+        android:label="Tất cả người dùng" />
 </navigation>
