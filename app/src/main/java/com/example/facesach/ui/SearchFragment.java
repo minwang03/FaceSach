@@ -8,8 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,7 +32,9 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -48,8 +53,13 @@ public class SearchFragment extends Fragment {
 
     private Socket socket;
     private int currentUserId;
-    int receiverId = 12;
+    int receiverId;
     private String room;
+    private Spinner spinnerUsers;
+    List<User> userList = new ArrayList<>();
+    private ArrayAdapter<String> spinnerAdapter;
+    Map<String, Integer> userNameToId = new HashMap<>();
+
 
     @Nullable
     @Override
@@ -108,8 +118,72 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        spinnerUsers = view.findViewById(R.id.spinnerUsers);
+        spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, new ArrayList<>());
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerUsers.setAdapter(spinnerAdapter);
+        fetchUserList();
+        spinnerUsers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedName = (String) parent.getItemAtPosition(position);
+                receiverId = userNameToId.get(selectedName);
+                room = generateRoomId(currentUserId, receiverId);
+                fetchMessagesFromApi();
+                if (socket != null) {
+                    socket.emit("joinRoom", room);
+                    Log.d("SocketStatus", "Re-joined room: " + room);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
         return view;
     }
+
+     private void fetchUserList() {
+        ApiService api = ApiClient.getClient().create(ApiService.class);
+        api.getAllUsers().enqueue(new Callback<ApiResponse<List<User>>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<List<User>>> call, @NonNull Response<ApiResponse<List<User>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<String> userNames = new ArrayList<>();
+                    userList.clear();
+                    userList.addAll(response.body().getData());
+                    userNameToId.clear();
+
+                    for (User user : userList) {
+                        if (user.getUser_id() != currentUserId) {
+                            userNames.add(user.getName());
+                            userNameToId.put(user.getName(), user.getUser_id());
+                        }
+                    }
+
+                    spinnerAdapter.clear();
+                    spinnerAdapter.addAll(userNames);
+                    spinnerAdapter.notifyDataSetChanged();
+
+                    if (!userNames.isEmpty()) {
+                        spinnerUsers.setSelection(0);
+                        receiverId = userNameToId.get(userNames.get(0));
+                        room = generateRoomId(currentUserId, receiverId);
+                        fetchMessagesFromApi();
+                        if (socket != null) {
+                            socket.emit("joinRoom", room);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<List<User>>> call, @NonNull Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
 
     private String generateRoomId(int user1, int user2) {
         return (user1 < user2) ? user1 + "_" + user2 : user2 + "_" + user1;
