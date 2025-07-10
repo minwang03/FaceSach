@@ -47,25 +47,26 @@ public class SearchFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private EditText edtMessage;
-    Button btnSend;
+    private Button btnSend;
     private MessageAdapter adapter;
-    List<Message> messageList = new ArrayList<>();
+    private List<Message> messageList = new ArrayList<>();
 
     private Socket socket;
     private int currentUserId;
-    int receiverId;
-    private String room;
-    private Spinner spinnerUsers;
-    List<User> userList = new ArrayList<>();
-    private ArrayAdapter<String> spinnerAdapter;
-    Map<String, Integer> userNameToId = new HashMap<>();
+    private int receiverId;
+    private String currentRoom = null;
 
+    private Spinner spinnerUsers;
+    private List<User> userList = new ArrayList<>();
+    private ArrayAdapter<String> spinnerAdapter;
+    private Map<String, Integer> userNameToId = new HashMap<>();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
+        // Lấy user hiện tại từ SharedPreferences
         SharedPreferences prefs = requireActivity().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
         String json = prefs.getString("user_data", null);
         if (json != null) {
@@ -74,66 +75,66 @@ public class SearchFragment extends Fragment {
             Log.d("DEBUG", "CurrentUserId = " + currentUserId);
         }
 
+        // Ánh xạ view
         recyclerView = view.findViewById(R.id.recyclerChat);
         edtMessage = view.findViewById(R.id.edtMessage);
         btnSend = view.findViewById(R.id.btnSend);
+        spinnerUsers = view.findViewById(R.id.spinnerUsers);
 
+        // Setup RecyclerView
         adapter = new MessageAdapter(messageList, currentUserId);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
-        room = generateRoomId(currentUserId, receiverId);
-        initSocket();
-        fetchMessagesFromApi();
-
-        btnSend.setOnClickListener(v -> {
-            String text = edtMessage.getText().toString().trim();
-            if (!text.isEmpty()) {
-                Message msg = new Message();
-                msg.setSender_id(currentUserId);
-                msg.setRoom(room);
-                msg.setMessage(text);
-
-                ApiService api = ApiClient.getClient().create(ApiService.class);
-                api.sendMessage(msg).enqueue(new Callback<ApiResponse<Message>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ApiResponse<Message>> call, @NonNull Response<ApiResponse<Message>> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            edtMessage.setText("");
-                            try {
-                                JSONObject jsonObject = new JSONObject(new Gson().toJson(response.body().getData()));
-                                socket.emit("sendMessage", jsonObject);
-                                Log.d("SocketEmit", "Emitted sendMessage: " + jsonObject.toString());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<ApiResponse<Message>> call, @NonNull Throwable t) {
-                        t.printStackTrace();
-                    }
-                });
-            }
-        });
-
-        spinnerUsers = view.findViewById(R.id.spinnerUsers);
+        // Setup Spinner
         spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, new ArrayList<>());
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerUsers.setAdapter(spinnerAdapter);
+
+        // Khởi tạo socket
+        initSocket();
+
+        // Gửi tin nhắn
+        btnSend.setOnClickListener(v -> {
+            String text = edtMessage.getText().toString().trim();
+            if (!text.isEmpty() && currentRoom != null) {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("sender_id", currentUserId);
+                    jsonObject.put("room", currentRoom);
+                    jsonObject.put("message", text);
+
+                    socket.emit("sendMessage", jsonObject);
+                    edtMessage.setText("");
+                    Log.d("SocketEmit", "Emitted sendMessage: " + jsonObject);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         fetchUserList();
+
         spinnerUsers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedName = (String) parent.getItemAtPosition(position);
                 receiverId = userNameToId.get(selectedName);
-                room = generateRoomId(currentUserId, receiverId);
-                fetchMessagesFromApi();
-                if (socket != null) {
-                    socket.emit("joinRoom", room);
-                    Log.d("SocketStatus", "Re-joined room: " + room);
+                String newRoom = generateRoomId(currentUserId, receiverId);
+
+                // Rời room cũ
+                if (socket != null && currentRoom != null && !currentRoom.equals(newRoom)) {
+                    socket.emit("leaveRoom", currentRoom);
+                    Log.d("SocketStatus", "Left room: " + currentRoom);
                 }
+
+                // Tham gia room mới
+                currentRoom = newRoom;
+                socket.emit("joinRoom", currentRoom);
+                Log.d("SocketStatus", "Joined room: " + currentRoom);
+
+                // Lấy tin nhắn cũ
+                fetchMessagesFromApi();
             }
 
             @Override
@@ -143,7 +144,7 @@ public class SearchFragment extends Fragment {
         return view;
     }
 
-     private void fetchUserList() {
+    private void fetchUserList() {
         ApiService api = ApiClient.getClient().create(ApiService.class);
         api.getAllUsers().enqueue(new Callback<ApiResponse<List<User>>>() {
             @Override
@@ -167,12 +168,6 @@ public class SearchFragment extends Fragment {
 
                     if (!userNames.isEmpty()) {
                         spinnerUsers.setSelection(0);
-                        receiverId = userNameToId.get(userNames.get(0));
-                        room = generateRoomId(currentUserId, receiverId);
-                        fetchMessagesFromApi();
-                        if (socket != null) {
-                            socket.emit("joinRoom", room);
-                        }
                     }
                 }
             }
@@ -184,7 +179,6 @@ public class SearchFragment extends Fragment {
         });
     }
 
-
     private String generateRoomId(int user1, int user2) {
         return (user1 < user2) ? user1 + "_" + user2 : user2 + "_" + user1;
     }
@@ -195,13 +189,14 @@ public class SearchFragment extends Fragment {
 
             socket.on(Socket.EVENT_CONNECT, args -> {
                 Log.d("SocketStatus", "Socket connected");
-                socket.emit("joinRoom", room);
-                Log.d("SocketStatus", "Emitted joinRoom: " + room);
+                if (currentRoom != null) {
+                    socket.emit("joinRoom", currentRoom);
+                    Log.d("SocketStatus", "Emitted joinRoom: " + currentRoom);
+                }
             });
 
             socket.on(Socket.EVENT_CONNECT_ERROR, args -> Log.e("SocketStatus", "Connect error"));
             socket.on(Socket.EVENT_DISCONNECT, args -> Log.d("SocketStatus", "Socket disconnected"));
-            socket.on("reconnect", args -> Log.d("SocketStatus", "Socket reconnected"));
             socket.on("newMessage", onNewMessage);
 
             socket.connect();
