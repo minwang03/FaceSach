@@ -66,5 +66,12 @@ public interface ApiService {
     @DELETE("users/{id}")
     Call<ApiResponse<Void>> deleteUser(@Path("id") int userId);
 
+    @DELETE("products/{id}")
+    Call<ApiResponse<Void>> deleteProduct(@Path("id") int productId);
+
+    @PUT("products/{id}")
+    Call<ApiResponse<Product>> updateProduct(@Path("id") int productId, @Body Product product);
+
+
 }
 

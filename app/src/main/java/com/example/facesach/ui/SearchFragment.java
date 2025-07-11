@@ -185,7 +185,7 @@ public class SearchFragment extends Fragment {
 
     private void initSocket() {
         try {
-            socket = IO.socket("http://10.0.2.2:3000");
+            socket = IO.socket("http://10.7.66.211:3000");
 
             socket.on(Socket.EVENT_CONNECT, args -> {
                 Log.d("SocketStatus", "Socket connected");

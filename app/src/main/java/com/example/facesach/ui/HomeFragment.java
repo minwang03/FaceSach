@@ -68,7 +68,11 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<ApiResponse<List<Category>>> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), "Không thể kết nối server", Toast.LENGTH_SHORT).show();
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Không thể kết nối server", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e("HomeFragment", "Context is null while showing toast");
+                }
             }
         });
     }
@@ -111,7 +115,11 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<ApiResponse<List<Product>>> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), "Không thể kết nối server", Toast.LENGTH_SHORT).show();
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Không thể kết nối server", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e("HomeFragment", "Context is null while showing toast");
+                }
             }
         });
     }
@@ -141,9 +149,6 @@ public class HomeFragment extends Fragment {
 
             tvName.setText(product.getName());
             tvPrice.setText(String.format("%,d VND", product.getPrice()));
-
-            Log.d("HomeFragment", "Product ID: " + product.getProductId() + ", Name: " + product.getName());
-
 
             Glide.with(this)
                     .load(product.getImage())
