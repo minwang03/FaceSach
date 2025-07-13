@@ -4,11 +4,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.facesach.R;
 import com.example.facesach.model.Product;
 
@@ -18,7 +20,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     private final List<Product> productList;
     private final OnItemActionListener listener;
 
-    // Interface callback cho Xóa và Sửa
     public interface OnItemActionListener {
         void onDelete(int productId);
         void onEdit(Product product);
@@ -32,7 +33,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_2, parent, false);
         return new ViewHolder(v);
     }
 
@@ -42,6 +43,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
         holder.txtName.setText(product.getName());
         holder.txtPrice.setText("Giá: " + product.getPrice() + " đ");
+
+        Glide.with(holder.itemView.getContext())
+                .load(product.getImage())
+                .placeholder(R.drawable.ic_avatar_placeholder)
+                .error(R.drawable.ic_avatar_placeholder)
+                .into(holder.ivImage);
 
         holder.btnDelete.setOnClickListener(v -> listener.onDelete(product.getProductId()));
         holder.btnEdit.setOnClickListener(v -> listener.onEdit(product));
@@ -55,6 +62,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtName, txtPrice;
         Button btnDelete, btnEdit;
+        ImageView ivImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -62,6 +70,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             txtPrice = itemView.findViewById(R.id.tvProductPrice);
             btnDelete = itemView.findViewById(R.id.btnDeleteProduct);
             btnEdit = itemView.findViewById(R.id.btnEditProduct);
+            ivImage = itemView.findViewById(R.id.ivProductImage);
         }
     }
 }

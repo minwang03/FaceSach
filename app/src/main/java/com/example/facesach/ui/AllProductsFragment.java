@@ -44,7 +44,19 @@ public class AllProductsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerProducts);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-//        adapter = new ProductAdapter(productList, this::deleteProduct);
+
+        adapter = new ProductAdapter(productList, new ProductAdapter.OnItemActionListener() {
+            @Override
+            public void onDelete(int productId) {
+                deleteProduct(productId);
+            }
+
+            @Override
+            public void onEdit(Product product) {
+                EditProductDialogFragment.newInstance(product).show(getParentFragmentManager(), "edit_product");
+            }
+        });
+
         recyclerView.setAdapter(adapter);
 
         btnBack.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
@@ -59,7 +71,6 @@ public class AllProductsFragment extends Fragment {
         apiService.getAllProducts().enqueue(new Callback<ApiResponse<List<Product>>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<List<Product>>> call, @NonNull Response<ApiResponse<List<Product>>> response) {
-
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     productList.clear();
                     productList.addAll(response.body().getData());
@@ -81,7 +92,6 @@ public class AllProductsFragment extends Fragment {
         apiService.deleteProduct(productId).enqueue(new Callback<ApiResponse<Void>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<Void>> call, @NonNull Response<ApiResponse<Void>> response) {
-
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     Toast.makeText(getContext(), "Đã xóa sản phẩm", Toast.LENGTH_SHORT).show();
                     fetchProducts();

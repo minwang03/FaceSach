@@ -8,7 +8,7 @@ public class Product implements Serializable {
     private String name;
     private String description;
     private int price;
-    private int stockQuantity;
+    private int stock_quantity;
     private Integer category_id;
     private String image;
     private Timestamp createdAt;
@@ -48,11 +48,11 @@ public class Product implements Serializable {
     }
 
     public int getStockQuantity() {
-        return stockQuantity;
+        return stock_quantity;
     }
 
     public void setStockQuantity(int stockQuantity) {
-        this.stockQuantity = stockQuantity;
+        this.stock_quantity = stockQuantity;
     }
 
     public Integer getCategoryId() {

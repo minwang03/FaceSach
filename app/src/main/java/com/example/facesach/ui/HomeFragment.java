@@ -1,5 +1,6 @@
 package com.example.facesach.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -78,8 +79,14 @@ public class HomeFragment extends Fragment {
     }
 
     private void showCategories(List<Category> categories) {
+        Context context = getContext();
+        if (context == null) {
+            Log.e("HomeFragment", "Context null in showCategories");
+            return;
+        }
+
         for (Category category : categories) {
-            Button btn = new Button(getContext());
+            Button btn = new Button(context);
             btn.setText(category.getName());
             btn.setAllCaps(false);
 
@@ -138,7 +145,7 @@ public class HomeFragment extends Fragment {
 
     private void showProducts(List<Product> products) {
         productContainer.removeAllViews();
-        LayoutInflater inflater = LayoutInflater.from(getContext());
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
 
         for (Product product : products) {
             View productView = inflater.inflate(R.layout.item_product, productContainer, false);
