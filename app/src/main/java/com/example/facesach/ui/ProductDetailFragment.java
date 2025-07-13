@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,9 +44,7 @@ import retrofit2.Response;
 public class ProductDetailFragment extends Fragment {
 
     private static final String ARG_PRODUCT = "arg_product";
-
     private Product product;
-
     ImageView ivProductImage;
     TextView tvProductName, tvProductPrice, tvProductDescription, tvQuantity;
     Button btnIncrease, btnDecrease, btnAddToCart, btnBack, btnSubmitComment;
@@ -53,12 +52,10 @@ public class ProductDetailFragment extends Fragment {
     RecyclerView rvComments;
     CommentAdapter commentAdapter;
     List<Comment> commentList = new ArrayList<>();
-
-
+    RatingBar ratingBar;
     private int quantity = 1;
 
-    public ProductDetailFragment() {
-    }
+    public ProductDetailFragment() {}
 
     public static ProductDetailFragment newInstance(Product product) {
         ProductDetailFragment fragment = new ProductDetailFragment();
@@ -96,7 +93,7 @@ public class ProductDetailFragment extends Fragment {
         rvComments.setLayoutManager(new LinearLayoutManager(requireContext()));
         commentAdapter = new CommentAdapter(commentList);
         rvComments.setAdapter(commentAdapter);
-
+        ratingBar = view.findViewById(R.id.ratingBar);
         btnBack = view.findViewById(R.id.btnBack);
 
         if (product != null) {
@@ -218,10 +215,13 @@ public class ProductDetailFragment extends Fragment {
             return;
         }
 
+        int rating = (int) ratingBar.getRating();
+        if (rating == 0) rating = 3;
+
         Comment comment = new Comment();
         comment.setUser_id(userId);
         comment.setProduct_id(product.getProductId());
-        comment.setRating(5);
+        comment.setRating(rating);
         comment.setComment(content);
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
@@ -230,6 +230,7 @@ public class ProductDetailFragment extends Fragment {
             public void onResponse(@NonNull Call<ApiResponse<Comment>> call, @NonNull Response<ApiResponse<Comment>> response) {
                 if (response.isSuccessful()) {
                     etComment.setText("");
+                    ratingBar.setRating(3); // Reset lại về mặc định
                     loadComments();
                     Toast.makeText(requireContext(), "Đã gửi bình luận", Toast.LENGTH_SHORT).show();
                 } else {

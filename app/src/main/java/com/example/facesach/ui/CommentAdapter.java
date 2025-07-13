@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public static class CommentViewHolder extends RecyclerView.ViewHolder {
         TextView tvUserName, tvComment, tvDate;
         ImageView ivAvatar;
+        RatingBar ratingBarComment;
+
 
         public CommentViewHolder(View itemView) {
             super(itemView);
@@ -33,14 +36,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             tvComment = itemView.findViewById(R.id.tvComment);
             tvDate = itemView.findViewById(R.id.tvDate);
             ivAvatar = itemView.findViewById(R.id.ivAvatar);
+            ratingBarComment = itemView.findViewById(R.id.ratingBarComment);
         }
     }
 
     @NonNull
     @Override
     public CommentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_comment, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_comment, parent, false);
         return new CommentViewHolder(view);
     }
 
@@ -50,10 +53,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         holder.tvUserName.setText(comment.getUser_name());
         holder.tvComment.setText(comment.getComment());
         holder.tvDate.setText(comment.getCreated_at());
-        Glide.with(holder.itemView.getContext())
-                .load(comment.getUser_avatar())
-                .placeholder(R.drawable.ic_avatar_placeholder)
-                .into(holder.ivAvatar);
+        holder.ratingBarComment.setRating(comment.getRating());
+        Glide.with(holder.itemView.getContext()).load(comment.getUser_avatar()).placeholder(R.drawable.ic_avatar_placeholder).into(holder.ivAvatar);
     }
 
     @Override
