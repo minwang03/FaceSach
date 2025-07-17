@@ -33,9 +33,6 @@ public interface ApiService {
     @GET("products")
     Call<ApiResponse<List<Product>>> getAllProducts();
 
-    @GET("products/search")
-    Call<ApiResponse<List<Product>>> searchProductsByName(@Query("name") String name);
-
     @GET("products/{id}")
     Call<ApiResponse<Product>> getProductById(@Path("id") int productId);
 
@@ -72,6 +69,8 @@ public interface ApiService {
     @PUT("products/{id}")
     Call<ApiResponse<Product>> updateProduct(@Path("id") int productId, @Body Product product);
 
+    @GET("products/search")
+    Call<ApiResponse<List<Product>>> searchProducts(@Query("q") String keyword);
 
 }
 

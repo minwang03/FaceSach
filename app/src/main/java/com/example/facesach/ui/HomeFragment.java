@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,6 +38,7 @@ public class HomeFragment extends Fragment {
     private LinearLayout productContainer;
     private List<Product> allProducts;
     ImageView ivCart;
+    private EditText etSearch;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -44,6 +46,7 @@ public class HomeFragment extends Fragment {
         categoryContainer = view.findViewById(R.id.categoryContainer);
         productContainer = view.findViewById(R.id.productContainer);
         ivCart = view.findViewById(R.id.ivCart);
+        etSearch = view.findViewById(R.id.etSearch);
         loadCategories();
         loadProducts();
 
@@ -52,7 +55,40 @@ public class HomeFragment extends Fragment {
             navController.navigate(R.id.action_homeFragment_to_cartFragment);
         });
 
+        etSearch.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
+                String keyword = etSearch.getText().toString().trim();
+                Log.d("Search", "Từ khóa tìm kiếm: " + keyword);
+                if (!keyword.isEmpty()) {
+                    searchProducts(keyword);
+                } else {
+                    showProducts(allProducts);
+                }
+                return true;
+            }
+            return false;
+        });
+
         return view;
+    }
+
+    private void searchProducts(String keyword) {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        apiService.searchProducts(keyword).enqueue(new Callback<ApiResponse<List<Product>>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<List<Product>>> call, @NonNull Response<ApiResponse<List<Product>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    showProducts(response.body().getData());
+                } else {
+                    Toast.makeText(getContext(), "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<List<Product>>> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Lỗi kết nối tìm kiếm", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadCategories() {
