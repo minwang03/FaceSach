@@ -3,7 +3,9 @@ package com.example.facesach.api;
 import com.example.facesach.model.ApiResponse;
 import com.example.facesach.model.Category;
 import com.example.facesach.model.Message;
+import com.example.facesach.model.Order;
 import com.example.facesach.model.OrderData;
+import com.example.facesach.model.OrderItem;
 import com.example.facesach.model.OrderRequest;
 import com.example.facesach.model.Product;
 import com.example.facesach.model.StatusUpdateRequest;
@@ -71,6 +73,12 @@ public interface ApiService {
 
     @GET("products/search")
     Call<ApiResponse<List<Product>>> searchProducts(@Query("q") String keyword);
+
+    @GET("orders/users/{userId}")
+    Call<ApiResponse<List<Order>>> getOrdersByUserId(@Path("userId") int userId);
+
+    @GET("orders/detail/{orderId}")
+    Call<ApiResponse<List<OrderItem>>> getOrderDetails(@Path("orderId") int orderId);
 
 }
 

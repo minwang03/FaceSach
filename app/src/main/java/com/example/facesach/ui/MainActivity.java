@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity {
                 bottomNavigationView.setVisibility(BottomNavigationView.VISIBLE);
                 bottomNavigationView.getMenu().findItem(R.id.settingsFragment).setChecked(true);
             }
+            else if (destId == R.id.userOrdersFragment) {
+                bottomNavigationView.setVisibility(BottomNavigationView.VISIBLE);
+                bottomNavigationView.getMenu().findItem(R.id.settingsFragment).setChecked(true);
+            }
             else {
                 bottomNavigationView.setVisibility(BottomNavigationView.GONE);
             }

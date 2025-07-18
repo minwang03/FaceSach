@@ -25,4 +25,11 @@
         android:layout_height="wrap_content"
         android:text="Xem tất cả người dùng" />
 
+    <Button
+        android:id="@+id/btnUserOrders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Xem đơn hàng của tôi"
+        android:layout_marginTop="16dp" />
+
 </LinearLayout>

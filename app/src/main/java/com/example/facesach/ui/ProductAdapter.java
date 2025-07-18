@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.facesach.R;
+import com.example.facesach.model.OrderItem;
 import com.example.facesach.model.Product;
 
 import java.util.List;
@@ -19,6 +20,10 @@ import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     private final List<Product> productList;
     private final OnItemActionListener listener;
+
+    public void update(List<OrderItem> body) {
+
+    }
 
     public interface OnItemActionListener {
         void onDelete(int productId);

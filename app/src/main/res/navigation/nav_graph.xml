@@ -71,6 +71,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_allUsersFragment"
             app:destination="@id/allUsersFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_userOrdersFragment"
+            app:destination="@id/userOrdersFragment" />
     </fragment>
 
     <fragment
@@ -82,4 +85,23 @@
         android:id="@+id/allUsersFragment"
         android:name="com.example.facesach.ui.AllUsersFragment"
         android:label="Tất cả người dùng" />
+
+    <fragment
+        android:id="@+id/userOrdersFragment"
+        android:name="com.example.facesach.ui.UserOrdersFragment"
+        android:label="Đơn hàng của tôi">
+        <action
+            android:id="@+id/action_userOrdersFragment_to_orderDetailFragment"
+            app:destination="@id/orderDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/orderDetailFragment"
+        android:name="com.example.facesach.ui.OrderDetailFragment"
+        android:label="Chi tiết đơn hàng">
+        <argument
+            android:name="orderId"
+            app:argType="integer" />
+    </fragment>
+
 </navigation>
