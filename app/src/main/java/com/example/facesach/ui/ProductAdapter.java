@@ -1,5 +1,6 @@
 package com.example.facesach.ui;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.facesach.R;
-import com.example.facesach.model.OrderItem;
 import com.example.facesach.model.Product;
 
 import java.util.List;
@@ -20,10 +20,6 @@ import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     private final List<Product> productList;
     private final OnItemActionListener listener;
-
-    public void update(List<OrderItem> body) {
-
-    }
 
     public interface OnItemActionListener {
         void onDelete(int productId);
@@ -50,7 +46,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.txtPrice.setText("Giá: " + product.getPrice() + " đ");
 
         Glide.with(holder.itemView.getContext())
-                .load(product.getImage())
+                .load(Uri.parse(product.getImage())) // Hỗ trợ content:// và http://
                 .placeholder(R.drawable.ic_avatar_placeholder)
                 .error(R.drawable.ic_avatar_placeholder)
                 .into(holder.ivImage);

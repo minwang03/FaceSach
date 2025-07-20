@@ -1,6 +1,9 @@
 package com.example.facesach.ui;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,8 +41,13 @@ import retrofit2.Response;
 public class EditProductDialogFragment extends DialogFragment {
 
     private static final String ARG_PRODUCT = "product";
+    private static final int PICK_IMAGE_REQUEST = 1;
+
     private Product product;
     private Integer selectedCategoryId;
+    private Uri selectedImageUri;
+
+    private ImageView imgPreview;
 
     public static EditProductDialogFragment newInstance(Product product) {
         EditProductDialogFragment fragment = new EditProductDialogFragment();
@@ -62,10 +70,10 @@ public class EditProductDialogFragment extends DialogFragment {
         EditText edtPrice = view.findViewById(R.id.edtProductPrice);
         EditText edtDesc = view.findViewById(R.id.edtProductDescription);
         EditText edtStock = view.findViewById(R.id.edtProductStock);
-        EditText edtImage = view.findViewById(R.id.edtProductImage);
-        ImageView imgPreview = view.findViewById(R.id.imgPreview);
+        imgPreview = view.findViewById(R.id.imgPreview);
         AutoCompleteTextView dropdownCategory = view.findViewById(R.id.dropdownCategory);
         Button btnSave = view.findViewById(R.id.btnSaveProduct);
+        Button btnPickImage = view.findViewById(R.id.btnPickImage);
 
         setupCategoryDropdown(dropdownCategory);
 
@@ -74,37 +82,22 @@ public class EditProductDialogFragment extends DialogFragment {
             edtPrice.setText(String.valueOf(product.getPrice()));
             edtDesc.setText(product.getDescription());
             edtStock.setText(String.valueOf(product.getStockQuantity()));
-            edtImage.setText(product.getImage());
 
-            Glide.with(requireContext())
-                    .load(product.getImage())
-                    .placeholder(R.drawable.ic_avatar_placeholder)
-                    .error(R.drawable.ic_avatar_placeholder)
-                    .into(imgPreview);
+            if (product.getImage() != null) {
+                Glide.with(requireContext())
+                        .load(Uri.parse(product.getImage()))
+                        .placeholder(R.drawable.ic_avatar_placeholder)
+                        .into(imgPreview);
+            }
         }
 
-        edtImage.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                String url = edtImage.getText().toString().trim();
-                if (!TextUtils.isEmpty(url)) {
-                    Glide.with(requireContext())
-                            .load(url)
-                            .placeholder(R.drawable.ic_avatar_placeholder)
-                            .error(R.drawable.ic_avatar_placeholder)
-                            .into(imgPreview);
-                }
-            }
-        });
+        btnPickImage.setOnClickListener(v -> openImagePicker());
 
         btnSave.setOnClickListener(v -> {
             String name = edtName.getText().toString().trim();
             String priceStr = edtPrice.getText().toString().trim();
             String description = edtDesc.getText().toString().trim();
             String stockStr = edtStock.getText().toString().trim();
-            String image = edtImage.getText().toString().trim();
-
-            // 👇 log input
-            Log.d("UPDATE", "User input -> name: " + name + ", price: " + priceStr + ", stock: " + stockStr + ", image: " + image);
 
             if (TextUtils.isEmpty(name) || TextUtils.isEmpty(priceStr)) {
                 Toast.makeText(getContext(), "Tên và giá không được để trống", Toast.LENGTH_SHORT).show();
@@ -112,14 +105,13 @@ public class EditProductDialogFragment extends DialogFragment {
             }
 
             if (TextUtils.isEmpty(stockStr)) {
-                stockStr = "0"; // fallback nếu để trống thì lấy 0
+                stockStr = "0";
             }
 
             try {
                 int price = Integer.parseInt(priceStr);
                 int stock = Integer.parseInt(stockStr);
 
-                // Fallback category nếu chưa chọn
                 if (selectedCategoryId == null && product.getCategoryId() != null) {
                     selectedCategoryId = product.getCategoryId();
                 }
@@ -128,10 +120,11 @@ public class EditProductDialogFragment extends DialogFragment {
                 product.setPrice(price);
                 product.setDescription(description);
                 product.setStockQuantity(stock);
-                product.setImage(image);
                 product.setCategoryId(selectedCategoryId);
 
-                Log.d("UPDATE", "Updating product: " + product.getProductId() + ", category_id: " + selectedCategoryId);
+                if (selectedImageUri != null) {
+                    product.setImage(selectedImageUri.toString());
+                }
 
                 updateProduct(product);
             } catch (NumberFormatException e) {
@@ -149,23 +142,35 @@ public class EditProductDialogFragment extends DialogFragment {
                 .create();
     }
 
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+            selectedImageUri = data.getData();
+
+            Glide.with(requireContext())
+                    .load(selectedImageUri)
+                    .placeholder(R.drawable.ic_avatar_placeholder)
+                    .into(imgPreview);
+        }
+    }
+
     private void updateProduct(Product product) {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
         apiService.updateProduct(product.getProductId(), product).enqueue(new Callback<ApiResponse<Product>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<Product>> call, @NonNull Response<ApiResponse<Product>> response) {
-                Log.d("UPDATE", "API response code: " + response.code());
-                if (response.errorBody() != null) {
-                    try {
-                        Log.e("UPDATE", "Error body: " + response.errorBody().string());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
                 if (response.isSuccessful() && response.body() != null) {
                     if (response.body().isSuccess()) {
                         Toast.makeText(getContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                        getParentFragmentManager().setFragmentResult("product_updated", new Bundle());
                         dismiss();
                     } else {
                         Toast.makeText(getContext(), "Cập nhật thất bại: " + response.body().getMessage(), Toast.LENGTH_SHORT).show();
@@ -218,10 +223,6 @@ public class EditProductDialogFragment extends DialogFragment {
                                 selectedCategoryId = c.getCategoryId();
                                 break;
                             }
-                        }
-
-                        if (selectedCategoryId == null) {
-                            selectedCategoryId = product.getCategoryId();
                         }
                     }
 

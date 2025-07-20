@@ -37,7 +37,6 @@ public class AllProductsFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_all_products, container, false);
 
         ImageButton btnBack = view.findViewById(R.id.btnBackProducts);
@@ -63,8 +62,13 @@ public class AllProductsFragment extends Fragment {
 
         fetchProducts();
 
+        getParentFragmentManager().setFragmentResultListener("product_updated", this, (requestKey, result) -> {
+            fetchProducts();
+        });
+
         return view;
     }
+
 
     private void fetchProducts() {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);

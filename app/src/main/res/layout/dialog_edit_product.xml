@@ -29,11 +29,11 @@
             android:hint="Số lượng tồn kho"
             android:inputType="number" />
 
-        <EditText
-            android:id="@+id/edtProductImage"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btnPickImage"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="URL hình ảnh" />
+            android:text="Chọn ảnh từ máy" />
 
         <ImageView
             android:id="@+id/imgPreview"
