@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -63,6 +62,9 @@ public class EditProductDialogFragment extends DialogFragment {
         if (getArguments() != null) {
             product = (Product) getArguments().getSerializable(ARG_PRODUCT);
         }
+        if (product == null) {
+            product = new Product();
+        }
 
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_edit_product, null);
 
@@ -77,7 +79,7 @@ public class EditProductDialogFragment extends DialogFragment {
 
         setupCategoryDropdown(dropdownCategory);
 
-        if (product != null) {
+        if (product.getProductId() != 0) {
             edtName.setText(product.getName());
             edtPrice.setText(String.valueOf(product.getPrice()));
             edtDesc.setText(product.getDescription());
@@ -126,7 +128,12 @@ public class EditProductDialogFragment extends DialogFragment {
                     product.setImage(selectedImageUri.toString());
                 }
 
-                updateProduct(product);
+                if (product.getProductId() == 0) {
+                    createProduct(product);
+                } else {
+                    updateProduct(product);
+                }
+
             } catch (NumberFormatException e) {
                 Toast.makeText(getContext(), "Giá và tồn kho phải là số hợp lệ", Toast.LENGTH_SHORT).show();
             }
@@ -138,7 +145,7 @@ public class EditProductDialogFragment extends DialogFragment {
 
         return new AlertDialog.Builder(requireActivity())
                 .setView(view)
-                .setTitle("Chỉnh sửa sản phẩm")
+                .setTitle(product.getProductId() == 0 ? "Thêm sản phẩm" : "Chỉnh sửa sản phẩm")
                 .create();
     }
 
@@ -151,10 +158,8 @@ public class EditProductDialogFragment extends DialogFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             selectedImageUri = data.getData();
-
             Glide.with(requireContext())
                     .load(selectedImageUri)
                     .placeholder(R.drawable.ic_avatar_placeholder)
@@ -167,16 +172,33 @@ public class EditProductDialogFragment extends DialogFragment {
         apiService.updateProduct(product.getProductId(), product).enqueue(new Callback<ApiResponse<Product>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<Product>> call, @NonNull Response<ApiResponse<Product>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    if (response.body().isSuccess()) {
-                        Toast.makeText(getContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-                        getParentFragmentManager().setFragmentResult("product_updated", new Bundle());
-                        dismiss();
-                    } else {
-                        Toast.makeText(getContext(), "Cập nhật thất bại: " + response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(getContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                    getParentFragmentManager().setFragmentResult("product_updated", new Bundle());
+                    dismiss();
                 } else {
-                    Toast.makeText(getContext(), "Lỗi khi cập nhật (status): " + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<Product>> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void createProduct(Product product) {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        apiService.createProduct(product).enqueue(new Callback<ApiResponse<Product>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<Product>> call, @NonNull Response<ApiResponse<Product>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(getContext(), "Thêm sản phẩm thành công", Toast.LENGTH_SHORT).show();
+                    getParentFragmentManager().setFragmentResult("product_updated", new Bundle());
+                    dismiss();
+                } else {
+                    Toast.makeText(getContext(), "Thêm thất bại", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -189,11 +211,9 @@ public class EditProductDialogFragment extends DialogFragment {
 
     private void setupCategoryDropdown(AutoCompleteTextView dropdownCategory) {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
         apiService.getAllCategories().enqueue(new Callback<ApiResponse<List<Category>>>() {
             @Override
-            public void onResponse(@NonNull Call<ApiResponse<List<Category>>> call,
-                                   @NonNull Response<ApiResponse<List<Category>>> response) {
+            public void onResponse(@NonNull Call<ApiResponse<List<Category>>> call, @NonNull Response<ApiResponse<List<Category>>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     List<Category> categories = response.body().getData();
                     List<String> categoryNames = new ArrayList<>();
@@ -204,11 +224,7 @@ public class EditProductDialogFragment extends DialogFragment {
                         nameToIdMap.put(category.getName(), category.getCategoryId());
                     }
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                            requireContext(),
-                            android.R.layout.simple_dropdown_item_1line,
-                            categoryNames
-                    );
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryNames);
                     dropdownCategory.setAdapter(adapter);
 
                     dropdownCategory.setOnItemClickListener((parent, view1, position, id) -> {

@@ -60,6 +60,11 @@ public class AllProductsFragment extends Fragment {
 
         btnBack.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
 
+        ImageButton btnAdd = view.findViewById(R.id.btnAddProduct);
+        btnAdd.setOnClickListener(v -> {
+            EditProductDialogFragment.newInstance(null).show(getParentFragmentManager(), "add_product");
+        });
+
         fetchProducts();
 
         getParentFragmentManager().setFragmentResultListener("product_updated", this, (requestKey, result) -> {
