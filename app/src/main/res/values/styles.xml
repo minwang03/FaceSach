@@ -1,4 +1,14 @@
 <resources>
+    <style name="OtpBoxStyle">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:inputType">number</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/otp_background</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:maxLength">1</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 
     <style name="Widget.Theme.FaceSach.MyView" parent="">
         <item name="android:background">@color/gray_400</item>

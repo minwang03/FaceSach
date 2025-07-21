@@ -2,6 +2,7 @@ package com.example.facesach.api;
 
 import com.example.facesach.model.ApiResponse;
 import com.example.facesach.model.Category;
+import com.example.facesach.model.ChangePasswordRequest;
 import com.example.facesach.model.Message;
 import com.example.facesach.model.Order;
 import com.example.facesach.model.OrderData;
@@ -87,6 +88,15 @@ public interface ApiService {
 
     @POST("products")
     Call<ApiResponse<Product>> createProduct(@Body Product product);
+
+    @PUT("users/change-password")
+    Call<ApiResponse<String>> changePassword(@Body ChangePasswordRequest request);
+
+    @GET("users/send-otp")
+    Call<ApiResponse<String>> sendOtpToEmail(@Query("email") String email);
+
+    @GET("users/verify-otp")
+    Call<ApiResponse<String>> verifyOtp(@Query("email") String email, @Query("otp") String otp);
 
 }
 
